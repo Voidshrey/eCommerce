@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function ProductCard({products , loading , error}) {
+export default function ProductCard({products , loading , error , addToCart}) {
   return (
     <>
     <div style={styles.container}>
@@ -24,6 +24,7 @@ export default function ProductCard({products , loading , error}) {
               <h3>{product.name}</h3>
               <p>{product.description}</p>
               <strong style={styles.price}>${product.price}</strong>
+              <button onClick={() =>addToCart(product?.id)}>Add to cart</button>
             </div>
           ))}
         </div>

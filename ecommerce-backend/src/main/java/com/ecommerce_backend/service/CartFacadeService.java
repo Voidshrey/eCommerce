@@ -4,6 +4,10 @@ import com.ecommerce_backend.entity.Cart;
 import com.ecommerce_backend.entity.CartItem;
 import com.ecommerce_backend.entity.Product;
 import com.ecommerce_backend.entity.User;
+import com.ecommerce_backend.mapper.CartItemMapper;
+import com.ecommerce_backend.mapper.CartMapper;
+import com.ecommerce_backend.model.CartItemModel;
+import com.ecommerce_backend.model.CartModel;
 import com.ecommerce_backend.repository.CartRepository;
 import com.ecommerce_backend.repository.ProductRepository;
 import com.ecommerce_backend.repository.UserRepository;
@@ -21,6 +25,8 @@ public class CartFacadeService {
     private final CartRepository cartRepository;
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
+    CartItemMapper cartItemMapper = CartItemMapper.INSTANCE;
+    CartMapper cartMapper = CartMapper.INSTANCE;
 
     public CartFacadeService(CartRepository cartRepository, ProductRepository productRepository, UserRepository userRepository) {
         this.cartRepository = cartRepository;
@@ -28,7 +34,7 @@ public class CartFacadeService {
         this.userRepository = userRepository;
     }
 
-    public @Nullable Cart addProductsToCart(Long productId, int quantity, Long userId) {
+    public CartModel addProductsToCart(Long productId, int quantity, Long userId) {
 
         if(ObjectUtils.isEmpty(productId)|| ObjectUtils.isEmpty(quantity)|| ObjectUtils.isEmpty(userId)){
             throw new RuntimeException("productId, or userId or quantity is null ");
@@ -38,21 +44,17 @@ public class CartFacadeService {
         CartItem cartItem = CartItem.builder().product(product.get()).quantity(quantity).build();
         if(ObjectUtils.isEmpty(cartRepositoryByUserId)){
 
-            User user = userRepository.findbyUserId(userId);
-            Cart cart = Cart.builder().user(user).items(cartItem.getCart().getItems()).build();
-            return  cartRepository.save(cart);
+            Optional<User> user = userRepository.findById(userId);
+            Cart cart = Cart.builder().user(user.get()).items(cartItem.getCart().getItems()).build();
+            return  cartMapper.toDto(cartRepository.save(cart));
             // create cart
         }
         //cart already exists for user
         // if already product exists increase the quantity by 1
         List<CartItem> cartItemsByCartId = cartRepository.findCartItemsByCartId(cartRepositoryByUserId.getId());
         cartItemsByCartId.stream().filter(cartItem1 -> cartItem1.getProduct().getId().equals(productId))
-                .forEach(cartItem1 -> cartItem1.setQuantity(cartItem1.getQuantity() + 1 ));
-        // add products to cart with quantity
-        List<CartItem> items = cartRepositoryByUserId.getItems();
-        items.add(cartItem);
-        cartRepositoryByUserId.setItems(items);
+                .forEach(cartItem1 -> cartItem1.setQuantity(quantity));
 
-        return cartRepository.save(cartRepositoryByUserId);
+        return cartMapper.toDto(cartRepository.save(cartRepositoryByUserId));
     }
 }

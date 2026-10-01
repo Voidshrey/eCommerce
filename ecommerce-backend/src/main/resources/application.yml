@@ -3,8 +3,8 @@ spring:
     name: ecommerce-backend
   datasource:
     url: jdbc:postgresql://localhost:5432/products
-    username: postgres
-    password: postgres123
+    username:
+    password:
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -18,7 +18,7 @@ spring:
 
 #  sql:
 #    init:
-#      mode: always   # ensures schema.sql and data.sql run at startup
+#      mode: once   # ensures schema.sql and data.sql run at startup
 #      schema-locations: classpath:schema.sql
 #      data-locations: classpath:data.sql
 

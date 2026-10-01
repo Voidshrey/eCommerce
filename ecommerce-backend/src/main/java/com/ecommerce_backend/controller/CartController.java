@@ -3,6 +3,8 @@ package com.ecommerce_backend.controller;
 import com.ecommerce_backend.entity.Cart;
 import com.ecommerce_backend.entity.CartItem;
 import com.ecommerce_backend.entity.Product;
+import com.ecommerce_backend.model.CartItemModel;
+import com.ecommerce_backend.model.CartModel;
 import com.ecommerce_backend.service.CartService;
 import com.ecommerce_backend.service.ProductService;
 import org.springframework.http.ResponseEntity;
@@ -34,15 +36,15 @@ public class CartController {
 
 //    findByUserId(Long userId)).
 
-    @GetMapping("user/{userId}")
-    public ResponseEntity<Cart> getCartByUserId(@RequestParam("userId") Long userId){
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<CartModel> getCartByUserId(@PathVariable("userId") Long userId){
         return ResponseEntity.ok(cartService.findCartByUserId(userId));
     }
 
-    @GetMapping("/add")
-    public ResponseEntity<Cart> addProductToCart(@RequestParam("productid") Long productId,
-                                                 @RequestParam("quantity") Long quantity,
-                                                 @RequestParam("userId") Long userId){
+    @PostMapping("/add/user/{userId}/product/{productId}")
+    public ResponseEntity<CartModel> addProductToCart(@PathVariable("productId") Long productId,
+                                                          @RequestParam("quantity") int quantity,
+                                                          @PathVariable("userId") Long userId){
         return ResponseEntity.ok(cartService.addProductsToCart(productId, quantity, userId));
     }
 

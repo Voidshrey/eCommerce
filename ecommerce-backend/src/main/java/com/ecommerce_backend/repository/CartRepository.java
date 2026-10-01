@@ -16,5 +16,6 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
     @Query("SELECT ci FROM CartItem ci WHERE ci.cart.id = :cartId")
     List<CartItem> findCartItemsByCartId(@Param("cartId") Long cartId);
 
-    @Nullable Cart findByUserId(Long userId);
+    @Query("SELECT c FROM Cart c WHERE c.user.id = :userId")
+    Cart findByUserId(@Param("userId") Long userId);
 }

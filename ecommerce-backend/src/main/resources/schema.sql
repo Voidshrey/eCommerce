@@ -14,6 +14,12 @@ CREATE TABLE IF NOT EXISTS product (
     image_url VARCHAR(500)
 );
 
+CREATE TABLE IF NOT EXISTS cart (
+    id SERIAL PRIMARY KEY,
+        user_id INT REFERENCES users(id) ON DELETE CASCADE,
+         UNIQUE(user_id)
+);
+
 CREATE TABLE IF NOT EXISTS cart_items (
     id SERIAL PRIMARY KEY,
     cart_id INT REFERENCES cart(id) ON DELETE CASCADE,
@@ -22,8 +28,4 @@ CREATE TABLE IF NOT EXISTS cart_items (
          UNIQUE(cart_id, product_id)
 );
 
-CREATE TABLE IF NOT EXISTS cart (
-    id SERIAL PRIMARY KEY,
-        user_id INT REFERENCES users(id) ON DELETE CASCADE,
-         UNIQUE(user_id)
-);
+

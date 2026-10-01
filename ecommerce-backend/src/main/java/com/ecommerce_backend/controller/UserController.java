@@ -1,15 +1,14 @@
 package com.ecommerce_backend.controller;
 
-import com.ecommerce_backend.entity.Cart;
-import com.ecommerce_backend.entity.CartItem;
+import com.ecommerce_backend.Exception.UserNotFoundException;
 import com.ecommerce_backend.entity.User;
-import com.ecommerce_backend.service.CartService;
+import com.ecommerce_backend.model.UserRegister;
 import com.ecommerce_backend.service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.List;
 
 @RequestMapping("/api/user")
 @RestController
@@ -22,21 +21,26 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping
+    @GetMapping("/email")
     public ResponseEntity<User> getUserByEmail(@RequestParam String email){
         return ResponseEntity.ok(userService.findUserByEmail(email));
     }
 
     //findByUsername(String username)
 
-    @GetMapping
+    @GetMapping("/userName")
     public ResponseEntity<User> getUserByUsername(@RequestParam String userName){
         return ResponseEntity.ok(userService.findUserByUserName(userName));
     }
 
-//    @PostMapping
-//    public ResponseEntity<String> createCart(@RequestBody Cart cart){
-//        return ResponseEntity.created(URI.create(cartService.createCart(cart).toString())).build();
-//    }
+    @PostMapping("/register")
+    public ResponseEntity<String> registerUser(@RequestBody UserRegister userRegister) {
+        try {
+            userService.registerUser(userRegister);
+            return ResponseEntity.created(URI.create("created")).build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
 
 }

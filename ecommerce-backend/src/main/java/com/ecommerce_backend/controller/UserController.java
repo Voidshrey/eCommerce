@@ -33,14 +33,4 @@ public class UserController {
         return ResponseEntity.ok(userService.findUserByUserName(userName));
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody UserRegister userRegister) {
-        try {
-            userService.registerUser(userRegister);
-            return ResponseEntity.created(URI.create("created")).build();
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
-    }
-
 }

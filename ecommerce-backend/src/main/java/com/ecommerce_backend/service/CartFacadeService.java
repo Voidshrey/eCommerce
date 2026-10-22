@@ -1,60 +1,91 @@
 package com.ecommerce_backend.service;
 
+import com.ecommerce_backend.Exception.ProductNotFoundException;
+import com.ecommerce_backend.Exception.UserNotFoundException;
 import com.ecommerce_backend.entity.Cart;
 import com.ecommerce_backend.entity.CartItem;
 import com.ecommerce_backend.entity.Product;
 import com.ecommerce_backend.entity.User;
 import com.ecommerce_backend.mapper.CartItemMapper;
 import com.ecommerce_backend.mapper.CartMapper;
-import com.ecommerce_backend.model.CartItemModel;
 import com.ecommerce_backend.model.CartModel;
+import com.ecommerce_backend.repository.CartItemRepository;
 import com.ecommerce_backend.repository.CartRepository;
 import com.ecommerce_backend.repository.ProductRepository;
 import com.ecommerce_backend.repository.UserRepository;
-import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class CartFacadeService {
 
     private final CartRepository cartRepository;
+    private final CartItemRepository cartItemRepository;
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
     CartItemMapper cartItemMapper = CartItemMapper.INSTANCE;
     CartMapper cartMapper = CartMapper.INSTANCE;
 
-    public CartFacadeService(CartRepository cartRepository, ProductRepository productRepository, UserRepository userRepository) {
+    public CartFacadeService(CartRepository cartRepository, CartItemRepository cartItemRepository, ProductRepository productRepository, UserRepository userRepository) {
         this.cartRepository = cartRepository;
+        this.cartItemRepository = cartItemRepository;
         this.productRepository = productRepository;
         this.userRepository = userRepository;
     }
 
     public CartModel addProductsToCart(Long productId, int quantity, Long userId) {
 
-        if(ObjectUtils.isEmpty(productId)|| ObjectUtils.isEmpty(quantity)|| ObjectUtils.isEmpty(userId)){
+        if (ObjectUtils.isEmpty(productId) || ObjectUtils.isEmpty(quantity) || ObjectUtils.isEmpty(userId)) {
             throw new RuntimeException("productId, or userId or quantity is null ");
         }
-        Cart cartRepositoryByUserId = cartRepository.findByUserId(userId);
+        CartItem cartItem = new CartItem();
+        Cart cartFromUserId = cartRepository.findByUserId(userId);
         Optional<Product> product = productRepository.findById(productId);
-        CartItem cartItem = CartItem.builder().product(product.get()).quantity(quantity).build();
-        if(ObjectUtils.isEmpty(cartRepositoryByUserId)){
+        Optional<User> user = userRepository.findById(userId);
+        if (product.isPresent()) {
+            if (Objects.isNull(cartFromUserId)) {
+                // if cart is not created for user -> create a cart with UserId
+                //get cartId // create cartItem with product and quantity and cartId
+                // save cartItem created // now update cart with cartItem
+                if (user.isPresent()) {
+                    Cart cart = Cart.builder().user(user.get()).build();
+                    Cart save = cartRepository.save(cart);
+                    cartItem = CartItem.builder().product(product.get()).quantity(quantity).cart(save).build();
+                    CartItem save1 = cartItemRepository.save(cartItem);
+                    Cart cart1 = Cart.builder().id(save.getId()).user(user.get()).items(List.of(save1)).build();
+                    return cartMapper.toDto(cartRepository.save(cart1));
+                } else {
+                    throw new UserNotFoundException("userDetails nots found for userId : " + userId);
+                }
+            }
+            //cart already exists for user
+            List<CartItem> cartItemsByCartId = cartRepository.findCartItemsByCartId(cartFromUserId.getId());
+            Set<Long> productsSet = cartItemsByCartId.stream()
+                    .map(items -> items.getProduct().getId()).collect(Collectors.toSet());
+            if (productsSet.contains(productId)) {
+                // if already product exists increase the quantity
+                CartItem cartItemWithProduct = cartItemsByCartId.stream().filter(cartItem1 -> cartItem1.getProduct().getId().equals(productId))
+                        .findFirst().get();
+                // added new quantity to cartItem with builder and updated it
+                CartItem cartItemSaveWithNewQuantity = cartItemRepository.save(CartItem.builder().id(cartItemWithProduct.getId())
+                        .cart(cartItemWithProduct.getCart())
+                        .product(cartItemWithProduct.getProduct()).quantity(quantity).build());
+                return cartMapper.toDto(cartRepository.findByUserId(userId));
+            } else {
+                // if product is not in the cart
+                // create a cartItem with new product and quantity and save
+                // save this new cartItem to same cart
+                CartItem cartItemWithNewProduct = CartItem.builder().product(product.get())
+                        .cart(cartFromUserId)
+                        .quantity(quantity).build();
+                 cartItemRepository.save(cartItemWithNewProduct);
+                return cartMapper.toDto(cartRepository.findByUserId(userId));
+            }
 
-            Optional<User> user = userRepository.findById(userId);
-            Cart cart = Cart.builder().user(user.get()).items(cartItem.getCart().getItems()).build();
-            return  cartMapper.toDto(cartRepository.save(cart));
-            // create cart
         }
-        //cart already exists for user
-        // if already product exists increase the quantity by 1
-        List<CartItem> cartItemsByCartId = cartRepository.findCartItemsByCartId(cartRepositoryByUserId.getId());
-        cartItemsByCartId.stream().filter(cartItem1 -> cartItem1.getProduct().getId().equals(productId))
-                .forEach(cartItem1 -> cartItem1.setQuantity(quantity));
-
-        return cartMapper.toDto(cartRepository.save(cartRepositoryByUserId));
+        throw new ProductNotFoundException(productId);
     }
 }

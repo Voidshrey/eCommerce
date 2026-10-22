@@ -37,25 +37,5 @@ public class UserService {
         return userRepository.findByUsername(userName);
     }
 
-    public void registerUser(UserRegister userRegister) {
-        if(!ObjectUtils.isEmpty(userRegister.getUserName()) && !ObjectUtils.isEmpty(userRegister.getEmail()) &&
-                !ObjectUtils.isEmpty(userRegister.getPassword())){
 
-            User userByEmail = userRepository.findByEmail(userRegister.getEmail());
-            User userByName = userRepository.findByEmail(userRegister.getUserName());
-
-            if(ObjectUtils.isEmpty(userByName) && ObjectUtils.isEmpty(userByEmail)){
-                User saveUser = User.builder().email(userRegister.getEmail())
-                        .username(userRegister.getUserName())
-                        .passwordHash(bCryptPasswordEncoder.encode(userRegister.getPassword()))
-                        .createdAt(LocalDateTime.now()).build();
-                 userRepository.save(saveUser);
-            }else{
-                throw new RuntimeException("User is already registered please login");
-            }
-
-        }else{
-            throw new RuntimeException("email or userName or password is empty or null");
-        }
-    }
 }

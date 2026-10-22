@@ -3,6 +3,7 @@ package com.ecommerce_backend.service;
 import com.ecommerce_backend.Exception.ProductNotFoundException;
 import com.ecommerce_backend.entity.Product;
 import com.ecommerce_backend.repository.ProductRepository;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -19,7 +20,7 @@ public class ProductService {
     }
 
 
-    public List<Product> getAllProducts(String searchName){
+    public List<Product> getAllProductsBySearchName(String searchName){
         if(!ObjectUtils.isEmpty(searchName)){
             return productRepository.findByNameContainingIgnoreCase(searchName);
         }
@@ -35,10 +36,9 @@ public class ProductService {
             Optional<Product> byId = productRepository.findById(product.getId());
             if (byId.isPresent()){
                Product product1 = byId.get();
-               Product product2 = Product.builder().id(product1.getId()).name(product1.getName())
-                       .price(product1.getPrice()).description(product.getDescription()).imageUrl(product1.getImageUrl())
+               Product product2 = Product.builder().id(product.getId()).name(product.getName())
+                       .price(product.getPrice()).description(product.getDescription()).imageUrl(product.getImageUrl())
                        .build();
-                product2.setId(product1.getId());
                return productRepository.save(product2);
             }else{
                 return  productRepository.save(product);
@@ -56,5 +56,9 @@ public class ProductService {
                 throw new ProductNotFoundException(product.getId());
             }
         }
+    }
+
+    public @Nullable List<Product> getAllProducts() {
+        return productRepository.findAll();
     }
 }

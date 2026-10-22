@@ -1,20 +1,23 @@
-import axios from 'axios';
+import axiosClient from "./axiosClient";
 
 // Create an axios instance with default configurations
-const api = axios.create({
-    baseURL: 'http://localhost:8080/api/',
-    headers:{
-"Content-Type":'application/json',
-    }
-});
-
+// const api = axiosClient.create({
+//   headers: {
+//     "Content-Type": "application/json",
+//     Authorization: `Bearer ${localStorage.getItem("token")}`,
+//   },
+// });
 
 export const productService = {
-    searchProduct: async (query)=>{
-        if(!query.trim()) return [];
-        const response = await api.get('products',{
-            params : {searchName : query}
-        });
-      return response.data;
-    }
+  searchProduct: async (query) => {
+    if (!query.trim()) return [];
+    const response = await axiosClient.get("products", {
+      params: { searchName: query },
+    });
+    return response.data;
+  },
+  getAllProducts: async () => {
+    const response = await axiosClient.get("products/getAll");
+    return response.data;
+  },
 };

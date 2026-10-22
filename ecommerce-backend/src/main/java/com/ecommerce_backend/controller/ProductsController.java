@@ -20,8 +20,13 @@ public class ProductsController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Product>> getAllProducts(@RequestParam(required = false) String searchName){
-        return ResponseEntity.ok(productService.getAllProducts(searchName));
+    public ResponseEntity<List<Product>> getAllProductsBySearchName(@RequestParam(required = false) String searchName){
+        return ResponseEntity.ok(productService.getAllProductsBySearchName(searchName));
+    }
+
+    @GetMapping("/getAll")
+    public ResponseEntity<List<Product>> getAllProducts(){
+        return ResponseEntity.ok(productService.getAllProducts());
     }
 
     @PostMapping

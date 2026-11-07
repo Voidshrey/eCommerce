@@ -3,8 +3,8 @@ spring:
     name: ecommerce-backend
   datasource:
     url: jdbc:postgresql://localhost:5432/products
-    username:
-    password:
+    username: postgres
+    password: postgres123
     driver-class-name: org.postgresql.Driver
 
   jpa:

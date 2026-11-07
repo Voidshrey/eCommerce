@@ -1,26 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { productService } from "../api/productService";
-
-const styles = {
-  navbar: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: "10px 20px",
-    backgroundColor: "#232f3e",
-    color: "white",
-  },
-  logo: { fontSize: "24px", fontWeight: "bold" },
-  searchContainer: { flex: 1, maxWidth: "500px", margin: "0 20px" },
-  searchInput: {
-    width: "100%",
-    padding: "8px 12px",
-    borderRadius: "4px",
-    border: "none",
-    fontSize: "16px",
-    outline: "none",
-  },
-};
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Box,
+  TextField,
+  IconButton,
+  Badge,
+} from "@mui/material";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import { useCart } from "../context/CartProvider";
 
 export default function NavBar({
   onSearchResults,
@@ -28,6 +18,7 @@ export default function NavBar({
   setError,
   fetchAllProducts,
 }) {
+  const { toggleCart, cartItemsCount } = useCart();
   const [searchWord, setSearchWord] = useState("");
 
   useEffect(() => {
@@ -54,17 +45,64 @@ export default function NavBar({
   }, [searchWord, onSearchResults, setLoading, setError]);
 
   return (
-    <nav style={styles.navbar}>
-      <div style={styles.logo}>MyStore</div>
-      <div style={styles.searchContainer}>
-        <input
-          type="text"
-          placeholder="Search products by name..."
-          value={searchWord}
-          onChange={(e) => setSearchWord(e.target.value)}
-          style={styles.searchInput}
-        />
-      </div>
-    </nav>
+    <AppBar position="sticky" sx={{ backgroundColor: "#232f3e" }}>
+      <Toolbar sx={{ justifyContent: "space-between" }}>
+        <Typography
+          variant="h6"
+          component="div"
+          sx={{ fontWeight: "bold", cursor: "pointer" }}
+        >
+          MyStore
+        </Typography>
+        <Box
+          sx={{
+            justifyContent: "space-between",
+            display: "flex",
+            alignItems: "flex-end",
+            width: "30%",
+          }}
+        >
+          <TextField
+            fullWidth
+            size="small"
+            variant="outlined"
+            placeholder="Search products by name..."
+            value={searchWord}
+            onChange={(e) => setSearchWord(e.target.value)}
+            sx={{
+              borderRadius: "4px",
+              backgroundColor: "white",
+              "& .MuiOutlinedInput-notchedOutline": { border: "none" },
+            }}
+          />
+
+          {/* 7. Integration of your customized shopping cart button */}
+          <IconButton
+            color="inherit"
+            onClick={toggleCart(true)}
+            sx={{
+              "&:focus-visible": {
+                outline: "2px solid #ffcc00",
+                outlineOffset: "2px",
+              },
+            }}
+          >
+            <Badge
+              badgeContent={cartItemsCount}
+              sx={{
+                "& .MuiBadge-badge": {
+                  backgroundColor: "#e53935",
+                  color: "#fff",
+                  fontWeight: "bold",
+                  fontSize: "0.75rem",
+                },
+              }}
+            >
+              <ShoppingCartIcon sx={{ color: "#ff9900", fontSize: "1.5rem" }} />
+            </Badge>
+          </IconButton>
+        </Box>
+      </Toolbar>
+    </AppBar>
   );
 }

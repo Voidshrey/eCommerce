@@ -25,8 +25,9 @@ public class CartService {
         this.cartFacadeService = cartFacadeService;
     }
 
-    public @Nullable List<CartItem> getAllItemsById(Long cartId) {
-        return cartRepository.findCartItemsByCartId(cartId);
+    public @Nullable List<CartItemModel> getAllItemsById(Long cartId) {
+        List<CartItem> cartItemsByCartId = cartRepository.findCartItemsByCartId(cartId);
+        return cartMapper.toListDto(cartItemsByCartId);
     }
 
     public Cart createCart(Cart cart) {
@@ -48,5 +49,13 @@ public class CartService {
         }
 
         return cartFacadeService.addProductsToCart(productId,quantity,userId);
+    }
+
+    public void updateCartItems(Long userId, int quantity, Long productId) {
+
+        if(ObjectUtils.isEmpty(userId) && ObjectUtils.isEmpty(quantity) && ObjectUtils.isEmpty(productId)){
+            throw new RuntimeException("Exception ocuured during update cart some of the fields are null or empty ");
+        }
+        cartFacadeService.updateCartItemQuantity(userId,quantity,productId);
     }
 }

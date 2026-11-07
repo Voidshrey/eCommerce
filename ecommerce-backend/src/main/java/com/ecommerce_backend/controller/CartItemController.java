@@ -31,4 +31,8 @@ public class CartItemController {
         return ResponseEntity.created(URI.create(cartItemService.createCartItem(cartItem).toString())).build();
     }
 
+//    @GetMapping
+//    public ResponseEntity<CartItem> getCartItemsByCartid(@RequestParam Long cartItemId){
+//        return ResponseEntity.ok(cartItemService.getCartItemById(cartItemId));
+//    }
 }

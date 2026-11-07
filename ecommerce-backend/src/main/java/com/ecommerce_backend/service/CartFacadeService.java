@@ -1,5 +1,6 @@
 package com.ecommerce_backend.service;
 
+import com.ecommerce_backend.Exception.CartItemNotFoundException;
 import com.ecommerce_backend.Exception.ProductNotFoundException;
 import com.ecommerce_backend.Exception.UserNotFoundException;
 import com.ecommerce_backend.entity.Cart;
@@ -70,9 +71,9 @@ public class CartFacadeService {
                 CartItem cartItemWithProduct = cartItemsByCartId.stream().filter(cartItem1 -> cartItem1.getProduct().getId().equals(productId))
                         .findFirst().get();
                 // added new quantity to cartItem with builder and updated it
-                CartItem cartItemSaveWithNewQuantity = cartItemRepository.save(CartItem.builder().id(cartItemWithProduct.getId())
+                cartItemRepository.save(CartItem.builder().id(cartItemWithProduct.getId())
                         .cart(cartItemWithProduct.getCart())
-                        .product(cartItemWithProduct.getProduct()).quantity(quantity).build());
+                        .product(cartItemWithProduct.getProduct()).quantity(cartItemWithProduct.getQuantity() + 1).build());
                 return cartMapper.toDto(cartRepository.findByUserId(userId));
             } else {
                 // if product is not in the cart
@@ -87,5 +88,16 @@ public class CartFacadeService {
 
         }
         throw new ProductNotFoundException(productId);
+    }
+
+    public void updateCartItemQuantity(Long userId, int quantity,Long productId) {
+        Optional<CartItem> cartItem = cartItemRepository.findByCart_User_IdAndProduct_Id(userId, productId);
+        if (cartItem.isPresent()) {
+            CartItem cartItem1 = cartItem.get();
+            cartItem1.setQuantity(quantity);
+            cartItemRepository.save(cartItem1);
+        }else {
+            throw new CartItemNotFoundException("Item not found to update");
+        }
     }
 }

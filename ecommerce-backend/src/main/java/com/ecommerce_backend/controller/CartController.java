@@ -24,8 +24,8 @@ public class CartController {
         this.cartService = cartService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<CartItem>> getAllCartItemsById(@RequestParam Long cartId){
+    @GetMapping("")
+    public ResponseEntity<List<CartItemModel>> getAllCartItemsById(@RequestParam Long cartId){
         return ResponseEntity.ok(cartService.getAllItemsById(cartId));
     }
 
@@ -46,6 +46,15 @@ public class CartController {
                                                           @RequestParam("quantity") int quantity,
                                                           @PathVariable("userId") Long userId){
         return ResponseEntity.ok(cartService.addProductsToCart(productId, quantity, userId));
+    }
+
+    @PutMapping("/add/cart/user/{userId}/product/{productId}")
+    public ResponseEntity<?> updateCartQuantity(
+            @PathVariable Long userId,
+            @PathVariable Long productId,
+            @RequestParam int quantity) {
+        cartService.updateCartItems(userId, quantity,productId);
+        return ResponseEntity.ok("Quantity updated cleanly!");
     }
 
 }

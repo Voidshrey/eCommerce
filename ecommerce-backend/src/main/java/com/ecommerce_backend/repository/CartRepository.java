@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CartRepository extends JpaRepository<Cart, Long> {
@@ -21,4 +22,7 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
 //    "SELECT c FROM Cart c JOIN c.cartItems ci WHERE ci.id = :cartItemId"
     @Query("SELECT c FROM Cart c JOIN CartItem ci ON ci.cart.id = c.id where c.id =:cartItemCartId" )
     Cart findCartByCartItemCartId(@Param("cartItemCartId")Long cartItemCartId);
+
+
+   // Optional<CartItem> findBycart_User_IdAndProduct_Id(@Param("userId") Long userId, @Param("productId") Long productId);
 }

@@ -5,4 +5,8 @@ public class CartItemNotFoundException extends RuntimeException{
    public CartItemNotFoundException(Long id){
         super("Cart Item not found for id :" +id);
     }
+
+    public CartItemNotFoundException(String msg){
+        super(msg);
+    }
 }

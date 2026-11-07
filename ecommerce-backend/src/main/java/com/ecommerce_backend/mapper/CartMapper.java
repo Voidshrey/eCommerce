@@ -24,10 +24,17 @@ public interface CartMapper {
 //    @Mapping(source = "product.name" , target = "productName")
     CartModel toDto(Cart cart);
 
+    List<CartModel> toDtoList(List<Cart> cart);
+
     @Mapping(source = "product.id", target = "productId")
     @Mapping(source = "product.name", target = "productName")
     @Mapping(source = "product.price", target = "price")
     CartItemModel toDto(CartItem item);
+
+//    @Mapping(source = "product.id", target = "productId")
+//    @Mapping(source = "product.name", target = "productName")
+//    @Mapping(source = "product.price", target = "price")
+    List<CartItemModel> toListDto(List<CartItem> item);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     Cart partialUpdate(CartModel cartModel, @MappingTarget Cart cart);

@@ -1,22 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { cartService } from "../api/cartService";
-import NavBar from "./Navbar";
-import { productService } from "../api/productService";
+import { useCart } from "../context/CartProvider";
 
-export default function ProductCard() {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [cart, setCart] = useState([]);
-
-  const fetchAllProducts = async () => {
-    let response = await productService.getAllProducts();
-    setProducts(response);
-  };
-
-  useEffect(() => {
-    fetchAllProducts();
-  }, []);
+export default function ProductCard({ products }) {
+  const { addToCart: addItemToCart } = useCart();
 
   const addToCart = async (productId) => {
     // 1. Find the product details from your main list first
@@ -26,57 +11,16 @@ export default function ProductCard() {
     if (!productToAdd) return;
 
     try {
-      // 2. Call your API first (Outside of the state updater)
-      const data = await cartService.addToCart(
-        Number.parseInt(localStorage.getItem("userId")),
-        productToAdd?.id,
-        1,
-      );
-
-      if (data.status === 200) {
-        // 3. If the API succeeds, safely update your React state
-        setCart((prevCart) => {
-          const itemExist = prevCart.find((item) => item.id === productId);
-
-          if (itemExist) {
-            // Increment the quantity of the existing item
-            return prevCart.map((item) =>
-              item.id === productId
-                ? { ...item, quantity: (item.quantity || 1) + 1 }
-                : item,
-            );
-          }
-
-          // Add the new item to the cart array
-          return [...prevCart, { ...productToAdd, quantity: 1 }];
-        });
-      }
+      await addItemToCart(productToAdd.id);
     } catch (error) {
-      console.error("Failed to add item to server cart:", error);
+      console.error("Failed to add item to cart:", error);
       // Optional: Add user-facing error message here (e.g., alert or toast notification)
     }
   };
 
   return (
     <>
-      <div>
-        <NavBar
-          onSearchResults={setProducts}
-          setLoading={setLoading}
-          setError={setError}
-          fetchAllProducts={fetchAllProducts}
-        />
-      </div>
       <div style={styles.container}>
-        {!loading && <h2>Search Results</h2>}
-
-        {loading && <p>Searching products...</p>}
-        {error && <p style={{ color: "red" }}>Error: {error}</p>}
-
-        {!loading && products.length === 0 && (
-          <p>No products found. Start typing in the navbar to search!</p>
-        )}
-
         <div style={styles.grid}>
           {products.map((product) => (
             <div key={product.id} style={styles.card}>

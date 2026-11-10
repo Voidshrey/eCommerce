@@ -100,4 +100,10 @@ public class CartFacadeService {
             throw new CartItemNotFoundException("Item not found to update");
         }
     }
+
+    public void deleteItem(Long userId, Long productId) {
+        Optional<CartItem> byCartUserIdAndProductId =
+                cartItemRepository.findByCart_User_IdAndProduct_Id(userId, productId);
+        byCartUserIdAndProductId.ifPresent(cartItemRepository::delete);
+    }
 }

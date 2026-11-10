@@ -57,4 +57,9 @@ public class CartController {
         return ResponseEntity.ok("Quantity updated cleanly!");
     }
 
+    @DeleteMapping("/delete/user/{userId}/product/{productId}")
+    public ResponseEntity<String> deleteItemByProductId(@PathVariable("userId") Long userId, @PathVariable("productId") Long productId) {
+        cartService.deleteItemByProductId(userId, productId);
+        return ResponseEntity.ok("Deleted Successfully!!!");
+    }
 }

@@ -1,5 +1,6 @@
 package com.ecommerce_backend.service;
 
+import com.ecommerce_backend.Exception.ProductNotFoundException;
 import com.ecommerce_backend.Exception.UserNotFoundException;
 import com.ecommerce_backend.entity.Cart;
 import com.ecommerce_backend.entity.CartItem;
@@ -57,5 +58,12 @@ public class CartService {
             throw new RuntimeException("Exception ocuured during update cart some of the fields are null or empty ");
         }
         cartFacadeService.updateCartItemQuantity(userId,quantity,productId);
+    }
+
+    public void deleteItemByProductId(Long userId, Long productId) {
+        if(ObjectUtils.isEmpty(userId) && ObjectUtils.isEmpty(productId)){
+            throw new ProductNotFoundException("ProductId not found ");
+        }
+        cartFacadeService.deleteItem(userId,productId);
     }
 }

@@ -45,24 +45,6 @@ export default function ProductList() {
         )}
 
         <ProductCard products={products} />
-
-        {/* <div style={styles.grid}>
-          {products.map((product) => (
-            <div key={product.id} style={styles.card}>
-              <img
-                src={product.imageUrl || "https://placeholder.com"}
-                alt={product.name}
-                style={styles.image}
-              />
-              <h3>{product.name}</h3>
-              <p>{product.description}</p>
-              <strong style={styles.price}>${product.price}</strong>
-              <button onClick={() => addToCart(product?.id)}>
-                Add to cart
-              </button>
-            </div>
-          ))}
-        </div> */}
       </div>
     </>
   );

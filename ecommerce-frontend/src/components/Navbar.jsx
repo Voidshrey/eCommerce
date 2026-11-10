@@ -46,22 +46,16 @@ export default function NavBar({
 
   return (
     <AppBar position="sticky" sx={{ backgroundColor: "#232f3e" }}>
-      <Toolbar sx={{ justifyContent: "space-between" }}>
+      <Toolbar sx={{ justifyContent: "space-between", gap: 2 }}>
         <Typography
-          variant="h6"
+          variant="h4"
           component="div"
-          sx={{ fontWeight: "bold", cursor: "pointer" }}
+          sx={{ fontWeight: "bold", cursor: "pointer", flexShrink: 0 }}
         >
           MyStore
         </Typography>
-        <Box
-          sx={{
-            justifyContent: "space-between",
-            display: "flex",
-            alignItems: "flex-end",
-            width: "30%",
-          }}
-        >
+
+        <Box sx={{ flexGrow: 1, maxWidth: "550px", mx: 2 }}>
           <TextField
             fullWidth
             size="small"
@@ -75,8 +69,17 @@ export default function NavBar({
               "& .MuiOutlinedInput-notchedOutline": { border: "none" },
             }}
           />
+        </Box>
+        <Box
+          sx={{ display: "flex", alignItems: "center", gap: 2, flexShrink: 0 }}
+        >
+          <Typography variant="body1" sx={{ color: "white" }}>
+            Hello,{" "}
+            <Box component="span" sx={{ color: "#ff9900", fontWeight: "bold" }}>
+              {localStorage.getItem("userName") || "Guest"}
+            </Box>
+          </Typography>
 
-          {/* 7. Integration of your customized shopping cart button */}
           <IconButton
             color="inherit"
             onClick={toggleCart(true)}
@@ -98,7 +101,9 @@ export default function NavBar({
                 },
               }}
             >
-              <ShoppingCartIcon sx={{ color: "#ff9900", fontSize: "1.5rem" }} />
+              <ShoppingCartIcon
+                sx={{ color: "#ff9900", fontSize: "1.75rem" }}
+              />
             </Badge>
           </IconButton>
         </Box>

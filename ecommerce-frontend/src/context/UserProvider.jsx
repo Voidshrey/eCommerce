@@ -10,7 +10,10 @@ export const UserProvider = ({ children }) => {
     userId: localStorage.getItem("userId") || null,
     userName: localStorage.getItem("userName") || "Guest",
     token: localStorage.getItem("token") || null,
+    role: localStorage.getItem("role") || "ROLE_USER",
   });
+
+  const [isAdmin, setIsAdmin] = useState(user?.role === "ROLE_ADMIN");
 
   const handleLogin = async (userName, password, e) => {
     e.preventDefault();
@@ -25,11 +28,14 @@ export const UserProvider = ({ children }) => {
         response.data?.token.trim() !== ""
       ) {
         localStorage.setItem("token", response.data?.token);
+        localStorage.setItem("role", response.data?.role);
+        setIsAdmin(response.data?.role === "ROLE_ADMIN");
         await fetchUserDetailsByUserName(userName);
         setUser({
           userId: localStorage.getItem("userId"),
           userName: localStorage.getItem("userName"),
           token: localStorage.getItem("token"),
+          role: localStorage.getItem("role"),
         });
       } else {
         throw new Error(
@@ -43,7 +49,7 @@ export const UserProvider = ({ children }) => {
     }
   };
   return (
-    <userContext.Provider value={{ user, handleLogin }}>
+    <userContext.Provider value={{ user, handleLogin, isAdmin }}>
       {children}
     </userContext.Provider>
   );

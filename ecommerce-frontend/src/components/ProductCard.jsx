@@ -1,7 +1,9 @@
 import { useCart } from "../context/CartProvider";
+import { useUser } from "../context/UserProvider";
 
 export default function ProductCard({ products }) {
   const { addToCart: addItemToCart } = useCart();
+  const { user } = useUser();
 
   const addToCart = async (productId) => {
     // 1. Find the product details from your main list first
@@ -17,7 +19,7 @@ export default function ProductCard({ products }) {
       // Optional: Add user-facing error message here (e.g., alert or toast notification)
     }
   };
-
+  const isAdmin = user?.role === "ROLE_ADMIN";
   return (
     <>
       <div style={styles.container}>
@@ -32,9 +34,15 @@ export default function ProductCard({ products }) {
               <h3>{product.name}</h3>
               <p>{product.description}</p>
               <strong style={styles.price}>${product.price}</strong>
-              <button onClick={() => addToCart(product?.id)}>
-                Add to cart
-              </button>
+              {isAdmin ? (
+                <button onClick={() => console.log("Edit product", product.id)}>
+                  Update/Edit Product
+                </button>
+              ) : (
+                <button onClick={() => addToCart(product?.id)}>
+                  Add to cart
+                </button>
+              )}
             </div>
           ))}
         </div>

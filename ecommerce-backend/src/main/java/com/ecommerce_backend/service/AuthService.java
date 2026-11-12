@@ -38,6 +38,7 @@ public class AuthService {
                 User saveUser = User.builder().email(userRegister.getEmail())
                         .username(userRegister.getUserName())
                         .passwordHash(bCryptPasswordEncoder.encode(userRegister.getPassword()))
+                        .role("ROLE_USER")
                         .createdAt(LocalDateTime.now()).build();
                 userRepository.save(saveUser);
             } else {
@@ -58,8 +59,10 @@ public class AuthService {
             var registerUser = userRepository.findByUsername(loginRequest.getUsername());
             if (!ObjectUtils.isEmpty(registerUser)) {
                 if (bCryptPasswordEncoder.matches(loginRequest.getPassword(), registerUser.getPasswordHash())) {
+                    var token = jwtUtils.generateToken(loginRequest.getUsername(), registerUser.getRole());
                     return LoginResponse.builder().
-                            token(jwtUtils.generateToken(loginRequest.getUsername()))
+                            token(token)
+                            .role(jwtUtils.getRoleFromToken(token))
                             .responseDesc("SUCCESS")
                             .build();
                 } else {

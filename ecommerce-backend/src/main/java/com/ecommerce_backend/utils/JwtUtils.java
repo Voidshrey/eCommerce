@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import java.security.Key;
 import io.jsonwebtoken.security.SignatureException;
 import java.util.Date;
+import java.util.Map;
 
 @ControllerAdvice
 @Component
@@ -22,11 +23,12 @@ public class JwtUtils {
 
 
 
-    public String generateToken(String userName) {
+    public String generateToken(String userName, String role) {
         return Jwts
                 .builder()
                 .signWith(key)
                 .setSubject(userName)
+                .claim("role",role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(new Date().getTime() + jwtExpirationMs))
                 .compact();
@@ -46,5 +48,10 @@ public class JwtUtils {
         } catch (Exception e) {
             throw new SignatureException("Invalid token signature or structure", e);
         }
+    }
+
+    public String getRoleFromToken(String token) {
+        return Jwts.parserBuilder().setSigningKey(key).build()
+                .parseClaimsJws(token).getBody().get("role", String.class);
     }
 }

@@ -2,14 +2,14 @@ spring:
   application:
     name: ecommerce-backend
   datasource:
-    url: jdbc:postgresql://localhost:5432/products
+    url: jdbc:postgresql://localhost:5432/ecommerce
     username: postgres
     password: postgres123
     driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
-      ddl-auto: none   # options: validate | update | create | create-drop
+      ddl-auto: update   # options: validate | update | create | create-drop
     show-sql: true
     properties:
       hibernate:

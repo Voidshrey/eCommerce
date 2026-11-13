@@ -20,4 +20,15 @@ export const productService = {
     const response = await axiosClient.get("products/getAll");
     return response.data;
   },
+  addProduct: async (productData) => {
+    const response = await axiosClient.post("products", productData);
+    return response.data;
+  },
+  updateProduct: async (productId, productData) => {
+    const response = await axiosClient.put(
+      `products/update/${productId}`,
+      productData,
+    );
+    return response.data;
+  },
 };

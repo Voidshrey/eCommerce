@@ -14,6 +14,7 @@ import {
   DialogContent,
   DialogActions,
 } from "@mui/material";
+import AdminProductForm from "./AdminProductForm";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 
 import { useCart } from "../context/CartProvider";
@@ -157,14 +158,26 @@ export default function NavBar({
       </AppBar>
 
       <Dialog open={openAddModal} onClose={() => setOpenAddModal(false)}>
-        <DialogTitle>Add New Product</DialogTitle>
-        <DialogContent></DialogContent>
-        <DialogActions>
-          {/* <Button onClick={() => setOpenAddModal(false)}>Cancel</Button>
-          <Button onClick={handleAddProduct} color="primary">
-            Add Product
-          </Button> */}
-        </DialogActions>
+        <DialogTitle>
+          {" "}
+          <Typography
+            variant="h5"
+            sx={{
+              fontWeight: "bold",
+              color: "#ff9900",
+              textAlign: "center",
+              mb: -1,
+            }}
+          >
+            Add New Product
+          </Typography>
+        </DialogTitle>
+        <DialogContent>
+          <AdminProductForm
+            onSuccess={handleProductAdded}
+            onCancel={() => setOpenAddModal(false)}
+          />
+        </DialogContent>
       </Dialog>
     </>
   );

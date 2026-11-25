@@ -45,7 +45,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // parse only the token
             String parsedToken = token.substring(7);
             try {
-                if (jwtUtils.validateToken(parsedToken)) {
+                if (jwtUtils.validateToken(parsedToken) && !jwtUtils.isBlackListToken(parsedToken) ) {
                     var userNameFromToken = jwtUtils.getUserNameFromToken(parsedToken);
                     var roleFromToken = jwtUtils.getRoleFromToken(parsedToken);
                     List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(roleFromToken));

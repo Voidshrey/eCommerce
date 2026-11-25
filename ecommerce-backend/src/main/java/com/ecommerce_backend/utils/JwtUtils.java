@@ -4,12 +4,15 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 
 import java.security.Key;
 import io.jsonwebtoken.security.SignatureException;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 @ControllerAdvice
 @Component
@@ -20,6 +23,8 @@ public class JwtUtils {
     private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     // expiration in MS
     private final int jwtExpirationMs = 86400000;
+
+    private final Set<String> blackListToken = new HashSet<>();
 
 
 
@@ -53,5 +58,17 @@ public class JwtUtils {
     public String getRoleFromToken(String token) {
         return Jwts.parserBuilder().setSigningKey(key).build()
                 .parseClaimsJws(token).getBody().get("role", String.class);
+    }
+
+    public void addBlackList(String token) {
+        if (!ObjectUtils.isEmpty(token)) {
+            blackListToken.add(token);
+        } else {
+            throw new RuntimeException("Token is empty");
+        }
+    }
+
+    public Boolean isBlackListToken(String token){
+       return blackListToken.contains(token);
     }
 }

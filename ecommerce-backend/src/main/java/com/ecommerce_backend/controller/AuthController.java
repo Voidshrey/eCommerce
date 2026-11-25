@@ -5,6 +5,8 @@ import com.ecommerce_backend.model.LoginResponse;
 import com.ecommerce_backend.model.UserRegister;
 import com.ecommerce_backend.service.AuthService;
 import com.ecommerce_backend.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import org.apache.coyote.RequestInfo;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,6 +38,16 @@ public class AuthController {
         try {
             authService.registerUser(userRegister);
             return ResponseEntity.created(URI.create("created")).build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logoutUser(HttpServletRequest httpServletRequest) {
+        try {
+            authService.logOutUser(httpServletRequest);
+            return ResponseEntity.ok("logout was successfully");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }

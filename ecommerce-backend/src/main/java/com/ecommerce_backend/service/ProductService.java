@@ -31,13 +31,13 @@ public class ProductService {
         return productRepository.save(product);
     }
 
-    public Product updateProduct(Product product) {
-        if(!ObjectUtils.isEmpty(product.getId())){
-            Optional<Product> byId = productRepository.findById(product.getId());
-            if (byId.isPresent()){
-               Product product1 = byId.get();
-               Product product2 = Product.builder().id(product.getId()).name(product.getName())
+    public Product updateProduct(Product product, Long productId) {
+        if(!ObjectUtils.isEmpty(productId)){
+            Optional<Product> storedProduct = productRepository.findById(productId);
+            if (storedProduct.isPresent()){
+               Product product2 = Product.builder().id(productId).name(product.getName())
                        .price(product.getPrice()).description(product.getDescription()).imageUrl(product.getImageUrl())
+                       .totalQuantity(product.getTotalQuantity())
                        .build();
                return productRepository.save(product2);
             }else{

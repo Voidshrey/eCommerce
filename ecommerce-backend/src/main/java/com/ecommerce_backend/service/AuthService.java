@@ -7,11 +7,14 @@ import com.ecommerce_backend.model.LoginResponse;
 import com.ecommerce_backend.model.UserRegister;
 import com.ecommerce_backend.repository.UserRepository;
 import com.ecommerce_backend.utils.JwtUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 public class AuthService {
@@ -19,11 +22,13 @@ public class AuthService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JwtUtils jwtUtils;
+    private final Set<String> blackList;
 
-    public AuthService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, JwtUtils jwtUtils) {
+    public AuthService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, JwtUtils jwtUtils, Set<String> blackList1) {
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.jwtUtils = jwtUtils;
+        this.blackList = new HashSet<>();
     }
 
 
@@ -73,5 +78,16 @@ public class AuthService {
             }
         }
         throw new RuntimeException("Username or password is not present");
+    }
+
+    public void logOutUser(HttpServletRequest httpServletRequest) {
+
+        String authorization = httpServletRequest.getHeader("Authorization");
+        String substring = authorization.substring(7);
+        if (!substring.isEmpty()) {
+            jwtUtils.addBlackList(substring);
+        }else {
+            throw new RuntimeException("Token is not valid");
+        }
     }
 }

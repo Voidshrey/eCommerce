@@ -24,4 +24,16 @@ export const authService = {
     });
     return response;
   },
+  logout: async (token) => {
+    const response = await api.post(
+      "/logout",
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+    return response;
+  },
 };

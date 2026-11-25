@@ -44,7 +44,7 @@ export default function ProductList() {
           <p>No products found. Start typing in the navbar to search!</p>
         )}
 
-        <ProductCard products={products} />
+        <ProductCard products={products} fetchAllProducts={fetchAllProducts} />
       </div>
     </>
   );

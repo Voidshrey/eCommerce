@@ -14,7 +14,8 @@ import {
   DialogContent,
   DialogActions,
 } from "@mui/material";
-import AdminProductForm from "./AdminProductForm";
+import AdminDashboard from "./AdminDashboard";
+import LogoutIcon from "@mui/icons-material/Logout";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 
 import { useCart } from "../context/CartProvider";
@@ -28,7 +29,7 @@ export default function NavBar({
 }) {
   const { toggleCart, cartItemsCount } = useCart();
   const [searchWord, setSearchWord] = useState("");
-  const { isAdmin } = useUser();
+  const { isAdmin, handleLogOut } = useUser();
 
   // 1. State to control opening/closing the Add Product modal
   const [openAddModal, setOpenAddModal] = useState(false);
@@ -153,32 +154,21 @@ export default function NavBar({
                 </Badge>
               </IconButton>
             )}
+            <Tooltip title="Log Out!!">
+              <IconButton color="inherit" onClick={handleLogOut}>
+                <LogoutIcon sx={{ color: "#ff2600", fontSize: "1.75rem" }} />
+              </IconButton>
+            </Tooltip>
           </Box>
         </Toolbar>
       </AppBar>
-
-      <Dialog open={openAddModal} onClose={() => setOpenAddModal(false)}>
-        <DialogTitle>
-          {" "}
-          <Typography
-            variant="h5"
-            sx={{
-              fontWeight: "bold",
-              color: "#ff9900",
-              textAlign: "center",
-              mb: -1,
-            }}
-          >
-            Add New Product
-          </Typography>
-        </DialogTitle>
-        <DialogContent>
-          <AdminProductForm
-            onSuccess={handleProductAdded}
-            onCancel={() => setOpenAddModal(false)}
-          />
-        </DialogContent>
-      </Dialog>
+      <AdminDashboard
+        initialData={null}
+        openEditModal={false}
+        openAddModal={openAddModal}
+        onClose={() => setOpenAddModal(false)}
+        onSuccess={handleProductAdded}
+      />
     </>
   );
 }

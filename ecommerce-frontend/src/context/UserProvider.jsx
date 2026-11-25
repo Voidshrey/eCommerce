@@ -2,10 +2,12 @@ import React from "react";
 import { authService } from "../api/AuthService";
 import { userService } from "../api/userService";
 import { useState } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 
 const userContext = React.createContext(undefined);
 
 export const UserProvider = ({ children }) => {
+  const navigate = useNavigate();
   const [user, setUser] = useState({
     userId: localStorage.getItem("userId") || null,
     userName: localStorage.getItem("userName") || "Guest",
@@ -48,8 +50,26 @@ export const UserProvider = ({ children }) => {
       );
     }
   };
+
+  const handleLogOut = async () => {
+    let userId = localStorage.getItem("userId");
+    let userName = localStorage.getItem("userName");
+    let token = localStorage.getItem("token");
+    let role = localStorage.getItem("role");
+    if (userId && userName && token && role) {
+      let response = await authService.logout(token);
+      if (response.status === 200) {
+        localStorage.clear();
+        navigate("/login", { replace: true });
+      }
+    } else {
+      localStorage.clear();
+      navigate("/login", { replace: true });
+    }
+  };
+
   return (
-    <userContext.Provider value={{ user, handleLogin, isAdmin }}>
+    <userContext.Provider value={{ user, handleLogin, isAdmin, handleLogOut }}>
       {children}
     </userContext.Provider>
   );

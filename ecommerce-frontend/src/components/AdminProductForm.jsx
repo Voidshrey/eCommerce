@@ -1,14 +1,30 @@
 import { Box, Typography, TextField, Button } from "@mui/material";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { productService } from "../api/productService";
 
-const AdminProductForm = ({ onSuccess, onCancel }) => {
+const AdminProductForm = ({ onSuccess, onCancel, initialData }) => {
   const [productName, setProductName] = useState("");
   const [productDescription, setProductDescription] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [price, setPrice] = useState("");
   const [totalQuantity, setTotalQuantity] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (initialData) {
+      setProductName(initialData.name || "");
+      setProductDescription(initialData.description || "");
+      setImageUrl(initialData.imageUrl || "");
+      setPrice(initialData.price || "");
+      setTotalQuantity(initialData.totalQuantity || "");
+    } else {
+      setProductName("");
+      setProductDescription("");
+      setImageUrl("");
+      setPrice("");
+      setTotalQuantity("");
+    }
+  }, [initialData]);
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -21,13 +37,23 @@ const AdminProductForm = ({ onSuccess, onCancel }) => {
         totalQuantity: parseInt(totalQuantity),
       };
 
-      await productService.addProduct(payload);
-      setProductName("");
-      setProductDescription("");
-      setImageUrl("");
-      setPrice("");
-      setTotalQuantity("");
-      onSuccess && onSuccess();
+      if (initialData) {
+        await productService.updateProduct(initialData.id, payload);
+        setProductName("");
+        setProductDescription("");
+        setImageUrl("");
+        setPrice("");
+        setTotalQuantity("");
+        onSuccess();
+      } else {
+        await productService.addProduct(payload);
+        setProductName("");
+        setProductDescription("");
+        setImageUrl("");
+        setPrice("");
+        setTotalQuantity("");
+        onSuccess && onSuccess();
+      }
     } catch (error) {
       console.error("Error adding product:", error);
     } finally {
@@ -141,7 +167,11 @@ const AdminProductForm = ({ onSuccess, onCancel }) => {
               "&:hover": { backgroundColor: "#e68a00" },
             }}
           >
-            {loading ? "Adding..." : "Add Product"}
+            {loading
+              ? "Adding..."
+              : initialData
+                ? "Update Product"
+                : "Add Product"}
           </Button>
         </Box>
       </Box>

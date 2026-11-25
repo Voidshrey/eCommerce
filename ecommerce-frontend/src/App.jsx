@@ -8,9 +8,9 @@ import { UserProvider } from "./context/UserProvider";
 export default function App() {
   return (
     <>
-      <UserProvider>
-        <CartProvider>
-          <BrowserRouter>
+      <BrowserRouter>
+        <UserProvider>
+          <CartProvider>
             <Routes>
               <Route path="/login" element={<LoginModal />} />
               <Route
@@ -31,9 +31,9 @@ export default function App() {
                 }
               />
             </Routes>
-          </BrowserRouter>
-        </CartProvider>
-      </UserProvider>
+          </CartProvider>
+        </UserProvider>
+      </BrowserRouter>
     </>
   );
 }

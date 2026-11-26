@@ -2,7 +2,9 @@ package com.ecommerce_backend.utils;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -20,18 +22,25 @@ public class JwtUtils {
 
 
     // we need a security key
-    private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+
+    @Value("${jwt.secret}")
+    private String secretKey;
     // expiration in MS
-    private final int jwtExpirationMs = 86400000;
+    @Value("${jwt.expiration}")
+    private long jwtExpirationMs;
 
     private final Set<String> blackListToken = new HashSet<>();
 
 
+    private Key getSignInKey() {
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        return Keys.hmacShaKeyFor(keyBytes);
+    }
 
     public String generateToken(String userName, String role) {
         return Jwts
                 .builder()
-                .signWith(key)
+                .signWith(getSignInKey())
                 .setSubject(userName)
                 .claim("role",role)
                 .setIssuedAt(new Date())
@@ -42,12 +51,12 @@ public class JwtUtils {
 
     public String getUserNameFromToken(String token) {
 
-        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
+        return Jwts.parserBuilder().setSigningKey(getSignInKey()).build().parseClaimsJws(token).getBody().getSubject();
     }
 
     public boolean validateToken(String token) throws SignatureException {
         try {
-            Jwts.parserBuilder().setSigningKey(key)
+            Jwts.parserBuilder().setSigningKey(getSignInKey())
                     .build().parseClaimsJws(token);
             return true;
         } catch (Exception e) {
@@ -56,7 +65,7 @@ public class JwtUtils {
     }
 
     public String getRoleFromToken(String token) {
-        return Jwts.parserBuilder().setSigningKey(key).build()
+        return Jwts.parserBuilder().setSigningKey(getSignInKey()).build()
                 .parseClaimsJws(token).getBody().get("role", String.class);
     }
 

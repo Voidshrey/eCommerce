@@ -20,4 +20,5 @@ public class CartItemModel {
     private String productName;
     private BigDecimal price;
     private int quantity;
+    private Long cartId;
 }

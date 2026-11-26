@@ -2,11 +2,11 @@ package com.ecommerce_backend.service;
 
 import com.ecommerce_backend.Exception.CartItemNotFoundException;
 import com.ecommerce_backend.entity.CartItem;
+import com.ecommerce_backend.mapper.CartItemMapper;
+import com.ecommerce_backend.model.CartItemModel;
 import com.ecommerce_backend.repository.CartItemRepository;
-import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -14,17 +14,19 @@ public class CartItemService {
 
     private final CartItemRepository cartItemRepository;
 
+    private final CartItemMapper cartItemMapper =  CartItemMapper.INSTANCE;
+
     public CartItemService(CartItemRepository cartItemRepository) {
         this.cartItemRepository = cartItemRepository;
     }
 
-    public @Nullable CartItem getCartItemById(Long cartItemId) {
+    public CartItemModel getCartItemById(Long cartItemId) {
 
         Optional<CartItem> byId = cartItemRepository.findById(cartItemId);
         if (!byId.isPresent()){
             throw new CartItemNotFoundException(cartItemId);
         }
-        return byId.get();
+        return cartItemMapper.toDto(byId.get());
     }
 
     public CartItem createCartItem(CartItem cartItem) {

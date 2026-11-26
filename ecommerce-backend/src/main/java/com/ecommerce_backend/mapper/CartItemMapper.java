@@ -11,6 +11,10 @@ public interface CartItemMapper {
 
     CartItem toEntity(CartItemModel cartItemModel);
 
+    @Mapping(source = "product.id", target = "productId")
+    @Mapping(source = "product.name", target = "productName")
+    @Mapping(source = "product.price", target = "price")
+    @Mapping(source = "cart.id", target = "cartId")
     CartItemModel toDto(CartItem cartItem);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

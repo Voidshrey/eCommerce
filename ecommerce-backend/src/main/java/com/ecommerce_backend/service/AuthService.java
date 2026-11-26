@@ -16,6 +16,8 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+
 @Service
 public class AuthService {
 
@@ -82,7 +84,7 @@ public class AuthService {
 
     public void logOutUser(HttpServletRequest httpServletRequest) {
 
-        String authorization = httpServletRequest.getHeader("Authorization");
+        String authorization = httpServletRequest.getHeader(AUTHORIZATION);
         String substring = authorization.substring(7);
         if (!substring.isEmpty()) {
             jwtUtils.addBlackList(substring);
